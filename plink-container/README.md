@@ -37,5 +37,5 @@ docker push <dockerhub_username>/plink-minimal:1.0
 # Notes
 
 * This container is intended for single-purpose PLINK analyses.
-* Additional bioinformatics tools (e.g., tabix, samtools) can be added later via Bioconda.
+* Additional bioinformatics tools (e.g., tabix, bcftools, etc.) can be added later via Bioconda.
 * Built on Ubuntu 22.04 with Miniconda for reproducibility.
