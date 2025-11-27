@@ -1,4 +1,4 @@
-# dockstore-tool-plink
+# plink-container
 
 A repository containing the Dockerfile to build a Docker image for the **PLINK** command-line tool (version1.9) installed via Bioconda. 
 
