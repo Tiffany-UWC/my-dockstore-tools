@@ -1,0 +1,50 @@
+name: Test workflows
+
+on: [push]
+
+jobs:
+  example_matrix:
+    strategy:
+      fail-fast: false
+      matrix:
+        lang: [cwl, wdl, nfl]
+
+    env:
+      LANGUAGE: ${{ matrix.lang }}
+
+    runs-on: ubuntu-24.04
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Build Docker image
+      uses: docker/build-push-action@v3
+      with:
+        push: false
+        tags: quay.io/collaboratory/dockstore-tool-bamstats
+
+    - if: matrix.lang == 'cwl'
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.9'
+
+    - name: Setup engines
+      run: bash install.sh
+    - name: Setup CLI 
+      run: | 
+        curl -L -o dockstore https://github.com/dockstore/dockstore/releases/download/1.12.2/dockstore
+        chmod +x dockstore       
+        mkdir /home/runner/dockstore_bin
+        mv dockstore /home/runner/dockstore_bin
+        echo "/home/runner/dockstore_bin" >> $GITHUB_PATH
+    - name: Prime CLI
+      run: | 
+        echo "$PATH"
+        mkdir ~/.dockstore
+        printf "cromwell-vm-options: -DLOG_LEVEL=ERROR\nserver-url: https://dockstore.org/api" > ~/.dockstore/config
+        dockstore
+
+    - if: matrix.lang == 'cwl'
+      run: sudo apt-get install -y moreutils
+
+    - name: Run workflows with CLI
+      run: bash cli-script.sh
